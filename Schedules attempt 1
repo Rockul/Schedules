@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scheduling Website</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Scheduling Website</h1>
+    <div id="schedule-container"></div>
+    <button onclick="openModal()">Add Schedule</button>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Add Schedule</h2>
+        <!-- Add form for adding schedules -->
+      </div>
+    </div>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#schedule-container {
+  margin-top: 20px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+body {
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#schedule-container {
+  margin-top: 20px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+// Functions for interacting with the modal
+function openModal() {
+  document.getElementById('modal').style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+// You can add more functionality for handling schedules using JavaScript
+npm init -y
+npm install express mongoose
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB (make sure to have MongoDB running locally or provide a connection string)
+mongoose.connect('mongodb://localhost/scheduling_app', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Define a Schedule schema
+const scheduleSchema = new mongoose.Schema({
+  title: String,
+  date: Date,
+  // Add more fields as needed
+});
+
+const Schedule = mongoose.model('Schedule', scheduleSchema);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve the front-end
+app.use(express.static('public'));
+
+// API endpoint to get schedules
+app.get('/api/schedules', async (req, res) => {
+  try {
+    const schedules = await Schedule.find();
+    res.json(schedules);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// API endpoint to add a schedule
+app.post('/api/schedules', async (req, res) => {
+  const { title, date } = req.body;
+
+  try {
+    const newSchedule = new Schedule({ title, date });
+    await newSchedule.save();
+    res.json(newSchedule);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
